@@ -23,4 +23,4 @@ First output is productivity in 2019 above and below the average (100)
 
 Second is a gif of the same plot but for the full dataset (2004 to 2021)
 
-\[(ITL3.gif)\]
+![](ITL3.gif)
