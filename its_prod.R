@@ -21,15 +21,16 @@ prod_dat <- readxl::read_excel(fil,
 ## Manually download ITL3 geojson file and import using st_read
 ITL3_geo <- st_read("International_Territorial_Level_3_January_2021_UK_BGC_V3_2022_-3166856060823825625.geojson") %>% 
   select(ITL321CD)
-ITL3_pd <- ITL3_geo %>% 
+
+ITL3_all <- ITL3_geo %>% 
   left_join(prod_dat, by = c('ITL321CD' = 'ITL code')) ## join it to the data by ITL3 code
 ## define breaks
-bks <- c(0,100 , max(ITL3$index...19))
+bks <- c(0,100 , max(ITL3_all$index...19))
 ## generate palette, preferably color blind safe to see options do
 ## cols4all::c4a_gui()
 pal_mean <- cols4all::c4a('carto.safe',  NROW(bks))
-## plot
-tm_1 <- tm_shape(ITL3) +
+## plot 2019
+tm_1 <- tm_shape(ITL3_all) +
   tm_polygons('index...19',palette = pal_mean,alpha = 0.6, border.col = 'white', breaks = bks,  title = 'GVA per hour')+
   tm_layout(legend.outside = FALSE, frame = FALSE, legend.outside.position = 'left', title.size = 1, 
             main.title = 'Where in the UK is productivity\nabove and below the\nnational average', 
@@ -42,7 +43,7 @@ tm_1 <- tm_shape(ITL3) +
 ## save as png
 tmap_save(tm_1, 'ITL3.png', width = 4500, height = 5500, dpi = 600)
 
-## use melt function to collapse data frame
+## use melt function from reshape2 to collapse data frame to plot all years
 ITL3_down <- prod_dat %>% 
   select(-`ITL level`, -`Region name`) %>% 
   mutate(ITL_code = `ITL code`) %>% 
@@ -73,7 +74,7 @@ tm_2 <- tm_shape(ITL3_down) +
   tm_facets(by = 'year', nrow = 1, ncol = 1)
 
 ## save animation
-tmap_animation(tm_2, filename = "ITL3.gif", delay = 60)
+tmap_animation(tm_2, filename = "ITL3.gif", delay = 60, width = 4500, height = 5500, dpi = 600)
 
 
 
